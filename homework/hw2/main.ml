@@ -7,13 +7,13 @@
 #use "exp.ml";;
 #use "lexer.ml";;
 #use "parser.ml";;
-#use "eval.ml";;    
+#use "eval.ml";;
 
 let clear () = Sys.command "clear";;
 
 
-let lex x = 
-	let y = x ^ "\n" in 
+let lex x =
+	let y = x ^ "\n" in
 		Lexing.from_string y
 ;;
 
@@ -25,8 +25,8 @@ let rec to_int e = match e with
     App(x,y)-> 1 + (to_int x) + (to_int y)
    |Lam(a,b)->to_int b
    |_->0
-              
-;;             
+
+;;
 
 
 let r = parse  "Lx.x y";;
@@ -37,7 +37,7 @@ print_string "\nparsed string: ";;
 print_lambda r;;
 print_string "\n";;
 
-  
+
 let myzero = parse "Lf.Lx.x";;
 let myone = parse "Lf. Lx. f x";;
 let mytwo = parse "Lf. Lx. f (f x)";;
@@ -56,7 +56,7 @@ let myor = parse "La. Lb. Lx. Ly.  b x (a x y)";;
 let iszero  =parse "Ln. n (Lx. (Lx.Ly. y)) (Lx. Ly. x)"
 let mypred = parse "Ln. Lf. Lx. n (Lg.  Lh.  h (g f)) (Lu.x) (Lu. u)";;
 let myminus = parse "Lm. Ln. (n Ln. Lf. Lx. n (Lg.  Lh.  h (g f)) (Lu.x) (Lu. u)) m";;
-  
+
 (*
    Y = \f.(\x. f (x x)) (\x. f (x x))
   fact = \f.\n. if n = 0 then 1 else n * (f (n -1))
@@ -68,19 +68,19 @@ let yfix = parse "Lf.(Lx. f (x x)) (Lx. f (x x))"
 let if2 (a,b,c) = App(App(App(myif,a),b),c);;
 
 
-let fact1 = 
+let fact1 =
    Lam ("f",
    Lam ("n",
-    	(if2 
+    	(if2
     	(
     	  (App (iszero, Var "n")),     (* condition *)
      	  (myone),						(* if branch *)
      	  (App (App (mymult, Var "n"), (App (Var "f", App (mypred, Var "n"))))) (* else *)
      	 )
         )
-      
+
       ))
-;;      
+;;
 
 (* caclutate factorial of 3  *)
 let e  =App(App(yfix, fact1), mythree)
@@ -99,7 +99,7 @@ let m =  (App(App(myplus,mytwo),mythree));;
 print_string "2+3=";;
 print_int(to_int (evaluate m));;
 print_string "\n";;
-    
+
 (* n = 2 * succ(n) = 2 * 6 = 12 *)
 let n = App(App(mymult, mytwo), App(mysucc,m));;
 let s = (evaluate n);;
@@ -108,3 +108,48 @@ print_lambda s;;
 print_string " = " ;;
 print_int (to_int s);;
 print_string "\n\n";;
+
+let aylmao1 =  (App (Var "a", Var "b"));;
+let aylmao2 = (App (Lam ("c",Var "c"), Var "a"));;
+let aylmao3 = (App (Lam ("c",Var "a"), Var "d"));;
+
+let epstein = subst aylmao1 "a" (Var "c");;
+let didn't = subst aylmao1 "b" aylmao2;;
+let kill = subst aylmao2 "c" (Var "F");;
+let himself = subst aylmao3 "a" (Var "c");;
+
+print_lambda epstein; print_newline ();;
+print_lambda didn't; print_newline ();;
+print_lambda kill; print_newline ();;
+print_lambda himself; print_newline ();;
+
+let r5 = App (Lam("x", Var "x"), Var "y");;
+print_lambda r5;;
+print_newline();;
+print_lambda (evaluate r5);;
+print_newline();;
+
+let r6 = App(Lam("x", Var "x"), Lam("y", Var "y"));;
+print_lambda r6;;
+print_newline();;
+print_lambda (evaluate r6);;
+print_newline();;
+
+let r7 = App(Lam("x", Lam("y", Var "x")), Var "y");;
+print_lambda r7;;
+print_newline();;
+print_lambda (evaluate r7);;
+print_newline();;
+
+let r8 = App(App(Lam("x", Lam("y", Var "x")), Var "y"), Var "z");;
+print_lambda r8;;
+print_newline();;
+print_lambda (evaluate r8);;
+print_newline();;
+
+let m4 = (App (App (Lam ("z",Var "z"), Lam ("x", Var "x")), Var "w"));;
+let m4red1 = reduce m4;;
+print_lambda m4;;
+print_newline();;
+print_lambda (evaluate m4red1);;
+print_newline();;
